@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3052B1</color>
+    <color name="colorPrimaryDark">#0F293D</color>
+    <color name="colorAccent">#E2C619</color>
+    <color name="colorWeather7">#F55D26</color>
+    <color name="colorWeather6">#D39630</color>
+    <color name="colorWeather5">#D8B28E</color>
+    <color name="colorWeather4">#E1E7D5</color>
+    <color name="colorWeather3">#A7C2DB</color>
+    <color name="colorWeather2">#82ACEE</color>
+    <color name="colorWeather1">#2875F1</color>
+
+</resources>

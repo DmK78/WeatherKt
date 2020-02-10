@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Погода</string>
+    <string name="widget_name">Погодный виджет</string>
+    <string name="widget_text">Погода в</string>
+    <string name="updating">обновление</string>
+    <string name="current_city">Текущий город</string>
+    <string name="city">Город</string>
+    <string name="date">Дата</string>
+    <string name="description">Описание</string>
+    <string name="direction">Направление</string>
+    <string name="humidity">Влажность:</string>
+    <string name="minimun">минимум</string>
+    <string name="please_wait">Загрузка</string>
+    <string name="pressure">Давление</string>
+    <string name="temperature">Температура</string>
+    <string name="search">поиск</string>
+    <string name="time">Время</string>
+    <string name="weather">погода</string>
+    <string name="weather_for_five_days">Погода на 5 суток</string>
+    <string name="wind">Ветер</string>
+    <string name="windspeed">Скорость ветра</string>
+    <string name="weather_for_hours">Погода по часам</string>
+</resources>
