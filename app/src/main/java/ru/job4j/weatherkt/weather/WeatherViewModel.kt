@@ -8,11 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.Place
 import ru.job4j.weatherkt.App
+import ru.job4j.weatherkt.location.MyLocationImpl
 import ru.job4j.weatherkt.model.CurrentWeather
 import ru.job4j.weatherkt.model.FiveDaysWeather
 import ru.job4j.weatherkt.network.NetworkService
-import ru.job4j.weatherkt.utils.MyLocationImpl
-import ru.job4j.weatherkt.utils.PlacePreferencesImpl
+import ru.job4j.weatherkt.sharedprefs.PlacePreferencesImpl
 import javax.inject.Inject
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,9 +26,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private val fiveDaysWeatherLiveData = MutableLiveData<FiveDaysWeather>()
 
     fun onClickGeo() {
-        val location: Location = locationService.getLocation()
+        val location: Location? = locationService.getLocation()
+
         val place =
-            Place.builder().setLatLng(LatLng(location.latitude, location.longitude))
+            Place.builder().setLatLng(location?.longitude?.let { LatLng(location.latitude, it) })
                 .build()
         updateWeather(place)
     }
@@ -50,7 +51,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     init {
-        App.component.inject(this)
+        App.component.injectTo(this)
         val place = placePreferences.loadPlace()
         if (TextUtils.isEmpty(place.name)) {
             onClickGeo()

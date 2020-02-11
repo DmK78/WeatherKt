@@ -1,4 +1,4 @@
-package ru.job4j.weatherkt.utils;
+package ru.job4j.weatherkt.sharedprefs;
 
 import com.google.android.libraries.places.api.model.Place;
 

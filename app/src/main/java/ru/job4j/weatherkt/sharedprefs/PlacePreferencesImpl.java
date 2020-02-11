@@ -1,4 +1,4 @@
-package ru.job4j.weatherkt.utils;
+package ru.job4j.weatherkt.sharedprefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,6 +7,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.Place;
 
 import javax.inject.Inject;
+
+import ru.job4j.weatherkt.sharedprefs.PlacePreferences;
+import ru.job4j.weatherkt.utils.Constants;
 
 /**
  * @author Dmitry Kolganov (mailto:dmk78@inbox.ru)

@@ -16,7 +16,7 @@ import ru.job4j.weatherkt.utils.Utils
 /**
  * @author Dmitry Kolganov (mailto:dmk78@inbox.ru)
  * @version $Id$
- * @since 01.12.2019
+ * @since 10.02.2019
  */
 class HoursAdapter() : RecyclerView.Adapter<HoursHolder>() {
     private var days: ArrayList<Day> = ArrayList()
