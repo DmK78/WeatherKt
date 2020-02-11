@@ -83,7 +83,7 @@ class DaysAdapter() : RecyclerView.Adapter<DayHolder>() {
                 imageViewDay.setImageResource(
                     Utils.getStringIdentifier(
                         context,
-                        "i" + day.weather[0].getIcon(),
+                        "i" + day.weather[0].icon,
                         "drawable"
                     )
                 )

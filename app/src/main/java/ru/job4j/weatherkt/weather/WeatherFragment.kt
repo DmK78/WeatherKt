@@ -1,6 +1,7 @@
 package ru.job4j.weatherkt.weather
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.TextUtils
@@ -33,6 +34,7 @@ import ru.job4j.weatherkt.utils.BgColorSetter
 import ru.job4j.weatherkt.utils.Utils
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 
 /**
@@ -47,6 +49,7 @@ class WeatherFragment : Fragment() {
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     private lateinit var viewModel: WeatherViewModel
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,8 +59,10 @@ class WeatherFragment : Fragment() {
         checkLocPermissions()
         viewModel = ViewModelProviders.of(this).get(WeatherViewModel::class.java)
         setupAdapters(view)
-        mSwipeRefreshLayout = SwipeRefreshLayout(view.context)
-        mSwipeRefreshLayout.setOnRefreshListener({ updateUi(viewModel.savedPlace) })
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe)
+        mSwipeRefreshLayout.setOnRefreshListener {
+            updateUi(viewModel.savedPlace)
+        }
         Places.initialize(context!!, getString(R.string.google_maps_key))
         val search =
             this.childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment?
@@ -80,47 +85,46 @@ class WeatherFragment : Fragment() {
                 )
             }
         })
-        view.imageViewGetLocation.setOnClickListener({ viewModel.onClickGeo() })
-
+        view.imageViewGetLocation.setOnClickListener { viewModel.onClickGeo() }
         viewModel.currentWeatherLiveDataResponse
             .observe(viewLifecycleOwner, Observer<CurrentWeather> { weather: CurrentWeather? ->
                 if (weather != null) {
                     val date = Date()
-                    date.time = weather.getDt().toLong() * 1000
+                    date.time = weather.dt!!.toLong() * 1000
                     val formatForDateNow =
                         SimpleDateFormat("dd.MM.yyyy EEE")
-                    textViewCurrentCity.setText(formatForDateNow.format(date) + "\n" + weather.getCityName() + ", " + weather.getSys().getCountry())
-                    textViewCurrentTemp.setText(Math.round(weather.main.temp).toString() + " C")
-                    textViewCurrentTempMin.setText(Math.round(weather.getMain().getMinTemp()).toString() + " C")
-                    textViewPressure.setText(Math.round(weather.getMain().getPressure()).toString() + " мм")
-                    textViewWeatherDesc.setText(weather.getWeather().get(0).getDescription())
-                    textViewWindSpeed.setText(weather.getWind().getSpeed().toString() + " m/s")
-                    textViewHumidity.setText(
-                        "${resources.getString(R.string.humidity)} ${Math.round(
-                            weather.main.humidity
-                        )} %"
-                    )
+                    textViewCurrentCity.text = "${formatForDateNow.format(date)}\n${weather.cityName}, ${weather.sys?.country}"
+                    textViewCurrentTemp.text = "${weather.main!!.temp.roundToInt()} C"
+                    textViewCurrentTempMin.text = "${weather.main.minTemp.roundToInt()} C"
+                    textViewPressure.text = "${weather.main.pressure.roundToInt()} мм"
+                    textViewWeatherDesc.text = weather.weather!![0].description
+                    textViewWindSpeed.text = "${weather.wind!!.speed} м/с"
+                    textViewHumidity.text = "${resources.getString(R.string.humidity)} ${weather.main.humidity.roundToInt()} %"
                     imageViewCurrent.setImageResource(
                         Utils.getStringIdentifier(
                             context,
-                            "i" + weather.getWeather().get(0).getIcon(),
+                            "i" + weather.weather[0].icon,
                             "drawable"
                         )
                     )
-                    imageViewWind.animate().rotation(weather.getWind().getDegree())
+                    imageViewWind.animate().rotation(weather.wind.degree)
                         .setDuration(1000).start()
-                    bgMain.setBackgroundResource(BgColorSetter.set(weather.getMain().getMaxTemp()))
-                    mSwipeRefreshLayout.setRefreshing(false)
+                    bgMain.setBackgroundResource(BgColorSetter.set(weather.main.maxTemp))
+
+                    mSwipeRefreshLayout.isRefreshing = false
+
+
                 }
             })
         viewModel.fiveDaysWeatherLiveDataResponse.observe(
             this,
             Observer<FiveDaysWeather> { fiveDaysWeather: FiveDaysWeather? ->
-                if (fiveDaysWeather != null) {
-                    val dayList: List<Day> = fiveDaysWeather.getDays()
-                    hoursAdapter.setData(dayList)
-                    daysAdapter.setData(dayList)
-                    //binding.swipe.setRefreshing(false)
+                fiveDaysWeather?.let {
+                    val dayList: List<Day>? = fiveDaysWeather.days
+                    dayList?.let {
+                        hoursAdapter.setData(it)
+                        daysAdapter.setData(it)
+                    }
                 }
             }
         )
@@ -129,10 +133,6 @@ class WeatherFragment : Fragment() {
             viewModel.onClickGeo()
         } else updateUi(place)
         return view
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     private fun setupAdapters(view: View) {
@@ -152,7 +152,7 @@ class WeatherFragment : Fragment() {
     }
 
     private fun updateUi(place: Place) {
-        mSwipeRefreshLayout.setRefreshing(true)
+        mSwipeRefreshLayout.isRefreshing = true
         viewModel.updateWeather(place)
     }
 

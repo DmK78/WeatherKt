@@ -59,12 +59,12 @@ class HoursAdapter() : RecyclerView.Adapter<HoursHolder>() {
                 tvHourDate.text = day.date
                 tvHourTime.text = day.time
                 tvHourTemp.text = Math.round(day.main.temp).toString() + " C"
-                tvHourDesc.text = day.weather[0].getDescription().toString()
+                tvHourDesc.text = day.weather[0].description.toString()
                 tvHourDesc.isSelected = true
                 ivHourWeather.setImageResource(
                     Utils.getStringIdentifier(
                         context,
-                        "i" + day.weather[0].getIcon(),
+                        "i" + day.weather[0].icon,
                         "drawable"
                     )
                 )

@@ -48,9 +48,9 @@ class NetworkService {
             .subscribe(object : DisposableSingleObserver<CurrentWeather?>() {
                 override fun onSuccess(currentWeather: CurrentWeather) {
                     if (!TextUtils.isEmpty(place.name)) {
-                        currentWeather.setCityName(place.name)
+                        currentWeather.cityName = place.name
                     }
-                    currentWeather.setLatLng(place.latLng)
+                    currentWeather.latLng = place.latLng
                     callback.postValue(currentWeather)
                 }
 
@@ -77,7 +77,6 @@ class NetworkService {
                 override fun onError(e: Throwable) {}
             })
     }
-
 
 
     val jSONApi: JsonPlaceHolderApi
