@@ -2,7 +2,6 @@ package ru.job4j.weatherkt.weather
 
 import android.app.Application
 import android.location.Location
-import android.text.TextUtils
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
@@ -25,13 +24,13 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private val currentWeatherLiveData = MutableLiveData<CurrentWeather>()
     private val fiveDaysWeatherLiveData = MutableLiveData<FiveDaysWeather>()
 
-    fun onClickGeo() {
+    fun updateWeatherByGeo() {
         val location: Location? = locationService.getLocation()
 
         val place =
-            Place.builder().setLatLng(location?.longitude?.let { LatLng(location.latitude, it) })
+            Place.builder().setLatLng(LatLng(location?.latitude!!, location.longitude))
                 .build()
-        updateWeather(place)
+        updateWeatherByPlace(place)
     }
 
     val savedPlace: Place
@@ -44,19 +43,24 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     val fiveDaysWeatherLiveDataResponse: MutableLiveData<FiveDaysWeather>
         get() = fiveDaysWeatherLiveData
 
-    fun updateWeather(place: Place) {
-        placePreferences.savePlace(place)
+    fun updateWeatherByPlace(place: Place) {
+      //  placePreferences.savePlace(place)
         networkService.getCurWeather(place, currentWeatherLiveData)
+
+
         networkService.getFiveDaysWeather(place, fiveDaysWeatherLiveData)
     }
 
     init {
         App.component.injectTo(this)
-        val place = placePreferences.loadPlace()
-        if (TextUtils.isEmpty(place.name)) {
+        if (!placePreferences.loadPlace().name.isNullOrBlank()) {
+            updateWeatherByPlace(placePreferences.loadPlace())
+        }
+
+        /*if (TextUtils.isEmpty(place.name)) {
             onClickGeo()
         } else
-            updateWeather(placePreferences.loadPlace())
+            updateWeather(placePreferences.loadPlace())*/
 
 
     }

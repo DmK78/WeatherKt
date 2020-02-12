@@ -9,7 +9,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -43,13 +45,13 @@ import kotlin.math.roundToInt
  * @since 01.12.2019
  */
 class WeatherFragment : Fragment() {
+    private var hasLocationPermission: Boolean = false
     private val REQUEST_LOCATION_PERMISSION = 1
     private lateinit var daysAdapter: DaysAdapter
     private lateinit var hoursAdapter: HoursAdapter
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     private lateinit var viewModel: WeatherViewModel
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,7 +63,7 @@ class WeatherFragment : Fragment() {
         setupAdapters(view)
         mSwipeRefreshLayout = view.findViewById(R.id.swipe)
         mSwipeRefreshLayout.setOnRefreshListener {
-            updateUi(viewModel.savedPlace)
+            updateUi(viewModel.placePreferences.loadPlace())
         }
         Places.initialize(context!!, getString(R.string.google_maps_key))
         val search =
@@ -75,7 +77,7 @@ class WeatherFragment : Fragment() {
         )
         search.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
-                updateUi(place)
+            updateUi(place)
             }
 
             override fun onError(status: Status) {
@@ -85,21 +87,26 @@ class WeatherFragment : Fragment() {
                 )
             }
         })
-        view.imageViewGetLocation.setOnClickListener { viewModel.onClickGeo() }
+        view.imageViewGetLocation.setOnClickListener { if (hasLocationPermission) viewModel.updateWeatherByGeo() else checkLocPermissions() }
         viewModel.currentWeatherLiveDataResponse
             .observe(viewLifecycleOwner, Observer<CurrentWeather> { weather: CurrentWeather? ->
                 if (weather != null) {
+                    val place =
+                        Place.builder().setName(weather.cityName).setLatLng(weather.latLng).build()
+                    viewModel.placePreferences.savePlace(place)
                     val date = Date()
                     date.time = weather.dt!!.toLong() * 1000
                     val formatForDateNow =
                         SimpleDateFormat("dd.MM.yyyy EEE")
-                    textViewCurrentCity.text = "${formatForDateNow.format(date)}\n${weather.cityName}, ${weather.sys?.country}"
+                    textViewCurrentCity.text =
+                        "${formatForDateNow.format(date)}\n${weather.cityName}, ${weather.sys?.country}"
                     textViewCurrentTemp.text = "${weather.main!!.temp.roundToInt()} C"
                     textViewCurrentTempMin.text = "${weather.main.minTemp.roundToInt()} C"
                     textViewPressure.text = "${weather.main.pressure.roundToInt()} мм"
                     textViewWeatherDesc.text = weather.weather!![0].description
                     textViewWindSpeed.text = "${weather.wind!!.speed} м/с"
-                    textViewHumidity.text = "${resources.getString(R.string.humidity)} ${weather.main.humidity.roundToInt()} %"
+                    textViewHumidity.text =
+                        "${resources.getString(R.string.humidity)} ${weather.main.humidity.roundToInt()} %"
                     imageViewCurrent.setImageResource(
                         Utils.getStringIdentifier(
                             context,
@@ -128,10 +135,6 @@ class WeatherFragment : Fragment() {
                 }
             }
         )
-        val place = viewModel.savedPlace
-        if (TextUtils.isEmpty(place.name)) {
-            viewModel.onClickGeo()
-        } else updateUi(place)
         return view
     }
 
@@ -140,20 +143,17 @@ class WeatherFragment : Fragment() {
         recyclerViewDays.layoutManager = LinearLayoutManager(context)
         daysAdapter = DaysAdapter()
         recyclerViewDays.adapter = daysAdapter
-
         val recyclerViewHours = view.findViewById(R.id.recyclerHours) as RecyclerView
-
         recyclerViewHours.layoutManager = LinearLayoutManager(
             context, LinearLayoutManager.HORIZONTAL, false
         )
         hoursAdapter = HoursAdapter()
         recyclerViewHours.adapter = hoursAdapter
-
     }
 
     private fun updateUi(place: Place) {
         mSwipeRefreshLayout.isRefreshing = true
-        viewModel.updateWeather(place)
+        viewModel.updateWeatherByPlace(place)
     }
 
     fun checkLocPermissions() {
@@ -168,16 +168,36 @@ class WeatherFragment : Fragment() {
             )
             != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                activity!!,
+            requestPermissions(
+
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 REQUEST_LOCATION_PERMISSION
             )
-            ActivityCompat.requestPermissions(
-                activity!!,
+            requestPermissions(
+
                 arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
                 REQUEST_LOCATION_PERMISSION
             )
+        } else hasLocationPermission = true
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            REQUEST_LOCATION_PERMISSION ->
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, proceed to the normal flow.
+                    viewModel.updateWeatherByGeo()
+                    hasLocationPermission = true
+                } else {
+                }
+
         }
     }
 }
