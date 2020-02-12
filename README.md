@@ -4,8 +4,7 @@
 
 Доступен прогноз на 5 суток, а также пронноз на 24 часа с интервалом в 3 часа. При первом запуске определяет местоположение и получает соответствующий прогноз.
 При дальнейших запусках, прогноз по геолокации получает только при нажатии на соответствующий значок.
-Так же можно осуществить поиск мест по Google Places. Так же есть скромный виджет, который обновляется раз в 30 минут,
-так же виджет можно обновить по клику.
+Так же можно осуществить поиск мест по Google Places.
 
 В этом проекте используется:
 
@@ -18,8 +17,7 @@ Weather forecast app.
 A forecast for 5 days is available, as well as pronosis for 24 hours with an interval of 3 hours.
  At the first start, it determines the location and receives the corresponding forecast.
 With further launches, the geolocation forecast gets only when you click on the corresponding icon.
-You can also search for places on Google Places. There is also a modest widget that is updated every 30 minutes,
-the widget can also be updated by click.
+You can also search for places on Google Places.
 
 This project uses:
 
