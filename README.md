@@ -9,7 +9,7 @@
 В этом проекте используется:
 
 
-Retrofit, Google Places, RX Java, Dagger
+Kotlin, Retrofit, Google Places, RX Java, Dagger
 
 # About
 Weather forecast app.
@@ -22,7 +22,7 @@ You can also search for places on Google Places.
 This project uses:
 
 
-Retrofit, Google places, RX Java, Dagger
+Kotlin, Retrofit, Google places, RX Java, Dagger
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/DmK78/weather/master/images/1.jpeg">
@@ -34,9 +34,7 @@ Retrofit, Google places, RX Java, Dagger
     <p align="center">
       <img src="https://raw.githubusercontent.com/DmK78/weather/master/images/3.jpeg">
       </p>
-      <p align="center">
-        <img src="https://raw.githubusercontent.com/DmK78/weather/master/images/4.jpeg">
-        </p>
+
 
 
 
