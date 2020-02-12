@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/DmK78/Weather.svg?branch=master)](https://travis-ci.org/DmK78/Weather)
+[![Build Status](https://travis-ci.org/DmK78/WeatherKt.svg?branch=master)](https://travis-ci.org/DmK78/WeatherKt)
 # О приложении
 Приложение "Прогноз погоды".
 
